@@ -17,7 +17,7 @@
 
 using namespace myopengl;
 
-// Variables globales para la c·mara y controles
+// Variables globales para la c√°mara y controles
 static float Yaw = 0.0f;
 static float Pitch = 0.0f;
 float mouseSensitivity = 0.5f;
@@ -27,7 +27,7 @@ float lastFrame = 0.0f;
 float deltaTime = 0.0f;
 
 // --- SHADER SOURCES ---
-// Shader principal (para iluminaciÛn y sombras)
+// Shader principal (para iluminaci√≥n y sombras)
 const char* vertexShaderSource = R"(
 #version 330 core
 layout (location = 0) in vec3 aPos;
@@ -47,7 +47,7 @@ uniform mat4 lightSpaceMatrix;
 void main() {
     vec4 worldPos = model * vec4(aPos, 1.0);
     FragPos = worldPos.xyz;
-    // Transformamos la normal (asegurando la correcciÛn en escalados no uniformes)
+    // Transformamos la normal (asegurando la correcci√≥n en escalados no uniformes)
     Normal = mat3(transpose(inverse(model))) * aNormal;
     TexCoord = aTexCoord;
     FragPosLightSpace = lightSpaceMatrix * worldPos;
@@ -75,7 +75,7 @@ uniform float mixRatio2;
 uniform float mixRatio3;
 
 uniform sampler2D shadowMap;
-uniform vec3 lightDir; // DirecciÛn de la luz (normalizada)
+uniform vec3 lightDir; // Direcci√≥n de la luz (normalizada)
 uniform vec3 viewPos;
 
 float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal, vec3 lightDir)
@@ -83,14 +83,14 @@ float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal, vec3 lightDir)
     // Dividir por w y transformar de [-1,1] a [0,1]
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
     projCoords = projCoords * 0.5 + 0.5;
-    // Obtener la profundidad m·s cercana del mapa de sombras
+    // Obtener la profundidad m√°s cercana del mapa de sombras
     float closestDepth = texture(shadowMap, projCoords.xy).r;
     float currentDepth = projCoords.z;
     // Bias para reducir artefactos (shadow acne)
     float bias = max(0.05 * (1.0 - dot(normal, -lightDir)), 0.005);
-    // Determinar si est· en sombra
+    // Determinar si est√° en sombra
     float shadow = currentDepth - bias > closestDepth ? 1.0 : 0.0;
-    // Si el fragmento est· fuera del rango, no aplicar sombra
+    // Si el fragmento est√° fuera del rango, no aplicar sombra
     if(projCoords.z > 1.0)
         shadow = 0.0;
     return shadow;
@@ -118,7 +118,7 @@ void main() {
     }
     
     vec3 norm = normalize(Normal);
-    // C·lculos de iluminaciÛn
+    // C√°lculos de iluminaci√≥n
     vec3 ambient = 0.15 * baseColor;
     float diff = max(dot(norm, -lightDir), 0.0);
     vec3 diffuse = diff * baseColor;
@@ -127,7 +127,7 @@ void main() {
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
     vec3 specular = vec3(0.3) * spec;
     
-    // C·lculo de sombra
+    // C√°lculo de sombra
     float shadow = ShadowCalculation(FragPosLightSpace, norm, lightDir);
     vec3 lighting = ambient + (1.0 - shadow) * (diffuse + specular);
     
@@ -155,10 +155,10 @@ void main()
 }
 )";
 
-// --- GEOMETRÕA ---
-// DefiniciÛn de un cubo con 36 vÈrtices (cada vÈrtice: posiciÛn, normal, coord. de textura)
+// --- GEOMETR√çA ---
+// Definici√≥n de un cubo con 36 v√©rtices (cada v√©rtice: posici√≥n, normal, coord. de textura)
 float cubeVertices[] = {
-    // PosiciÛn             // Normal           // TexCoord
+    // Posici√≥n             // Normal           // TexCoord
     // Front face
     -0.5f, -0.5f,  0.5f,     0.0f,  0.0f,  1.0f,  0.0f, 0.0f,
      0.5f, -0.5f,  0.5f,     0.0f,  0.0f,  1.0f,  1.0f, 0.0f,
@@ -205,7 +205,7 @@ float cubeVertices[] = {
 
 // Un plano para representar el piso (se extiende en X y Z)
 float planeVertices[] = {
-    // PosiciÛn                // Normal       // TexCoords
+    // Posici√≥n                // Normal       // TexCoords
      10.0f, -2.5f,  10.0f,      0.0f, 1.0f, 0.0f,   10.0f,  0.0f,
     -10.0f, -2.5f,  10.0f,      0.0f, 1.0f, 0.0f,    0.0f,  0.0f,
     -10.0f, -2.5f, -10.0f,      0.0f, 1.0f, 0.0f,    0.0f, 10.0f,
@@ -215,7 +215,7 @@ float planeVertices[] = {
      10.0f, -2.5f, -10.0f,      0.0f, 1.0f, 0.0f,   10.0f, 10.0f
 };
 
-// FunciÛn para cargar texturas desde archivo
+// Funci√≥n para cargar texturas desde archivo
 unsigned int loadTexture(const char* path) {
     unsigned int textureID;
     glGenTextures(1, &textureID);
@@ -234,7 +234,7 @@ unsigned int loadTexture(const char* path) {
         glBindTexture(GL_TEXTURE_2D, textureID);
         glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
-        // Par·metros de la textura
+        // Par√°metros de la textura
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
@@ -248,7 +248,7 @@ unsigned int loadTexture(const char* path) {
     return textureID;
 }
 
-// Estructura para la configuraciÛn de multitextura (igual que en tu cÛdigo original)
+// Estructura para la configuraci√≥n de multitextura
 struct MultiTextureConfig {
     bool useMultiTexture;
     int texIndex1;
@@ -262,13 +262,13 @@ struct MultiTextureConfig {
 int main() {
     if (!glfwInit()) return -1;
 
-    GLFWwindow* window = glfwCreateWindow(1400, 1200, "MÛvil con Luces y Sombras", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(1400, 1200, "M√≥vil con Luces y Sombras", NULL, NULL);
     if (!window) { glfwTerminate(); return -1; }
     glfwMakeContextCurrent(window);
     glewExperimental = GL_TRUE;
     glewInit();
 
-    // ConfiguraciÛn de Dear ImGui
+    // Configuraci√≥n de Dear ImGui
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
@@ -280,7 +280,7 @@ int main() {
 
     glEnable(GL_DEPTH_TEST);
 
-    // --- COMPILACI”N DE SHADERS ---
+    // --- COMPILACI√ìN DE SHADERS ---
     auto compileShader = [&](GLenum type, const char* source) -> GLuint {
         GLuint shader = glCreateShader(type);
         glShaderSource(shader, 1, &source, NULL);
@@ -295,7 +295,7 @@ int main() {
         return shader;
     };
 
-    // Programa principal (iluminaciÛn y sombras)
+    // Programa principal (iluminaci√≥n y sombras)
     GLuint vertexShader = compileShader(GL_VERTEX_SHADER, vertexShaderSource);
     GLuint fragmentShader = compileShader(GL_FRAGMENT_SHADER, fragmentShaderSource);
     GLuint shaderProgram = glCreateProgram();
@@ -327,14 +327,14 @@ int main() {
     glDeleteShader(depthVertexShader);
     glDeleteShader(depthFragmentShader);
 
-    // --- CONFIGURACI”N DE BUFFERS PARA EL CUBO ---
+    // --- CONFIGURACI√ìN DE BUFFERS PARA EL CUBO ---
     GLuint cubeVAO, cubeVBO;
     glGenVertexArrays(1, &cubeVAO);
     glGenBuffers(1, &cubeVBO);
     glBindVertexArray(cubeVAO);
     glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
-    // Atributo 0: posiciÛn
+    // Atributo 0: posici√≥n
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     // Atributo 1: normal
@@ -345,14 +345,14 @@ int main() {
     glEnableVertexAttribArray(2);
     glBindVertexArray(0);
 
-    // --- CONFIGURACI”N DE BUFFERS PARA EL PISO (plano) ---
+    // --- CONFIGURACI√ìN DE BUFFERS PARA EL PISO (plano) ---
     GLuint planeVAO, planeVBO;
     glGenVertexArrays(1, &planeVAO);
     glGenBuffers(1, &planeVBO);
     glBindVertexArray(planeVAO);
     glBindBuffer(GL_ARRAY_BUFFER, planeVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), planeVertices, GL_STATIC_DRAW);
-    // PosiciÛn
+    // Posici√≥n
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     // Normal
@@ -365,13 +365,13 @@ int main() {
 
     // --- CARGA DE TEXTURAS ---
     std::vector<unsigned int> textures;
-    textures.push_back(loadTexture("textures/wood.jpg"));     // Ìndice 0
-    textures.push_back(loadTexture("textures/metal.jpg"));    // Ìndice 1
-    textures.push_back(loadTexture("textures/concrete.jpg")); // Ìndice 2
-    textures.push_back(loadTexture("textures/grass.jpeg"));   // Ìndice 3
-    textures.push_back(loadTexture("textures/stone.jpeg"));    // Ìndice 4
+    textures.push_back(loadTexture("textures/wood.jpg"));     // √≠ndice 0
+    textures.push_back(loadTexture("textures/metal.jpg"));    // √≠ndice 1
+    textures.push_back(loadTexture("textures/concrete.jpg")); // √≠ndice 2
+    textures.push_back(loadTexture("textures/grass.jpeg"));   // √≠ndice 3
+    textures.push_back(loadTexture("textures/stone.jpeg"));    // √≠ndice 4
 
-    // Posiciones de los objetos del mÛvil (como en tu cÛdigo original)
+    // Posiciones de los objetos del m√≥vil (como en tu c√≥digo original)
     glm::vec3 posiciones[12] = {
         glm::vec3(2.0f, -2.0f, 0.0f),
         glm::vec3(-2.0f, -2.0f, 0.0f),
@@ -387,7 +387,7 @@ int main() {
         glm::vec3(0.0f,  0.5f, 0.0f)
     };
 
-    // ConfiguraciÛn de multitextura para cada objeto (igual que en tu cÛdigo)
+    // Configuraci√≥n de multitextura para cada objeto (igual que en tu c√≥digo)
     int cubeTextures[12] = { 0, 1, 2, 3, 4, 0, 1, 2, 3, 0, 1, 2 };
     bool useTextures[12] = { true, true, true, true, true, true, true, true, true, true, true, true };
     MultiTextureConfig multiTexConfigs[12];
@@ -407,7 +407,7 @@ int main() {
     multiTexConfigs[1].useMultiTexture = true;
     multiTexConfigs[2].useMultiTexture = true;
 
-    // --- CONFIGURACI”N DEL SHADOW MAPPING ---
+    // --- CONFIGURACI√ìN DEL SHADOW MAPPING ---
     const unsigned int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
     GLuint depthMapFBO;
     glGenFramebuffers(1, &depthMapFBO);
@@ -430,7 +430,7 @@ int main() {
 
     glClearColor(0.6f, 0.8f, 1.0f, 1.0f);
 
-    // --- Par·metros de luz ---
+    // --- Par√°metros de luz ---
     glm::vec3 lightDir = glm::normalize(glm::vec3(-0.2f, -1.0f, -0.3f));
 
     // Bucle principal
@@ -439,7 +439,7 @@ int main() {
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        // Control de c·mara (moviÈndose con WASD, mouse, etc.)
+        // Control de c√°mara 
         if (ImGui::IsKeyDown(ImGuiKey_W))
             wasd_Movement.y -= movementSpeed * deltaTime;
         if (ImGui::IsKeyDown(ImGuiKey_S))
@@ -460,7 +460,7 @@ int main() {
             Pitch += deltaY * deltaTime * mouseSensitivity;
         }
 
-        // Matriz de vista: primero trasladamos (para "alejar" la c·mara) y luego rotamos
+        // Matriz de vista: primero trasladamos (para "alejar" la c√°mara) y luego rotamos
         glm::mat4 view = glm::mat4(1.0f);
         view = glm::translate(view, glm::vec3(wasd_Movement.x, wasd_Movement.y, -18.0f + wasd_Movement.z));
         view = glm::rotate(view, Pitch, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -469,7 +469,7 @@ int main() {
         glm::mat4 projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
 
         // --- PASADA 1: RENDERIZADO DEL MAPA DE SOMBRAS ---
-        // Configuramos la c·mara de la luz (usamos proyecciÛn ortogr·fica)
+        // Configuramos la c√°mara de la luz (usamos proyecci√≥n ortogr√°fica)
         float near_plane = 1.0f, far_plane = 20.0f;
         glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
         glm::mat4 lightView = glm::lookAt(-lightDir * 10.0f, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
@@ -481,12 +481,12 @@ int main() {
         glUseProgram(depthShaderProgram);
         glUniformMatrix4fv(glGetUniformLocation(depthShaderProgram, "lightSpaceMatrix"), 1, GL_FALSE, glm::value_ptr(lightSpaceMatrix));
 
-        // Renderizar cada objeto (mÛvil) en la pasada de profundidad
+        // Renderizar cada objeto (m√≥vil) en la pasada de profundidad
         glBindVertexArray(cubeVAO);
         float angle = currentFrame * 0.4f;
         for (int i = 0; i < 12; i++) {
             glm::mat4 model = glm::mat4(1.0f);
-            // Ajuste de escala seg˙n el objeto (igual que en tu cÛdigo original)
+            // Ajuste de escala segun el objeto
             if (i >= 5 && i < 9)
                 model = scale(glm::vec3(0.1f, 2.0f, 0.1f));
             else if (i == 9)
@@ -514,22 +514,22 @@ int main() {
         glViewport(0, 0, display_w, display_h);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glUseProgram(shaderProgram);
-        // Enviar matrices de c·mara y luz
+        // Enviar matrices de c√°mara y luz
         glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "view"), 1, GL_FALSE, glm::value_ptr(view));
         glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
         glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "lightSpaceMatrix"), 1, GL_FALSE, glm::value_ptr(lightSpaceMatrix));
-        // Enviar posiciÛn de la c·mara (para el c·lculo especular)
+        // Enviar posici√≥n de la c√°mara (para el c√°lculo especular)
         glm::vec3 camPos = glm::vec3(wasd_Movement.x, wasd_Movement.y, -18.0f + wasd_Movement.z);
         glUniform3fv(glGetUniformLocation(shaderProgram, "viewPos"), 1, glm::value_ptr(camPos));
         glUniform3fv(glGetUniformLocation(shaderProgram, "lightDir"), 1, glm::value_ptr(lightDir));
-        // Asignar las texturas: se utilizar·n las unidades 0-2 para el objeto y la 3 para el mapa de sombras.
+        // Asignar las texturas: se utilizar√°n las unidades 0-2 para el objeto y la 3 para el mapa de sombras.
         glUniform1i(glGetUniformLocation(shaderProgram, "diffuseTexture"), 0);
         glUniform1i(glGetUniformLocation(shaderProgram, "texture1"), 0);
         glUniform1i(glGetUniformLocation(shaderProgram, "texture2"), 1);
         glUniform1i(glGetUniformLocation(shaderProgram, "texture3"), 2);
         glUniform1i(glGetUniformLocation(shaderProgram, "shadowMap"), 3);
 
-        // Renderizar cada objeto del mÛvil
+        // Renderizar cada objeto del m√≥vil
         glBindVertexArray(cubeVAO);
         for (int i = 0; i < 12; i++) {
             glm::mat4 model = glm::mat4(1.0f);
@@ -544,7 +544,7 @@ int main() {
             model = glm::translate(model, posiciones[i]);
             model = glm::rotate(glm::mat4(1.0f), angle, glm::vec3(0.0f, 1.0f, 0.0f)) * model;
             glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
-            // Configurar uso de texturas y multitextura seg˙n el objeto
+            // Configurar uso de texturas y multitextura seg√∫n el objeto
             glUniform1i(glGetUniformLocation(shaderProgram, "useTexture"), useTextures[i]);
             glUniform1i(glGetUniformLocation(shaderProgram, "useMultiTexture"), multiTexConfigs[i].useMultiTexture);
             if (multiTexConfigs[i].useMultiTexture && useTextures[i]) {
@@ -571,13 +571,12 @@ int main() {
 
         // Renderizar el piso
         glBindVertexArray(planeVAO);
-        glm::mat4 modelFloorScene = glm::mat4(1.0f);  // Renombrada para evitar redefiniciÛn
+        glm::mat4 modelFloorScene = glm::mat4(1.0f);  // Renombrada para evitar redefinici√≥n
         glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(modelFloorScene));
-        // Para el piso se usa una sola textura (por ejemplo, "grass")
         glUniform1i(glGetUniformLocation(shaderProgram, "useTexture"), true);
         glUniform1i(glGetUniformLocation(shaderProgram, "useMultiTexture"), false);
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, textures[3]); // Textura "grass"
+        glBindTexture(GL_TEXTURE_2D, textures[3]);
         glActiveTexture(GL_TEXTURE3);
         glBindTexture(GL_TEXTURE_2D, depthMap);
         glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -603,7 +602,7 @@ int main() {
                 ImGui::Checkbox("Use Texture", &useTextures[i]);
                 if (useTextures[i]) {
                     if (ImGui::Combo("Texture", &cubeTextures[i], textureNames, IM_ARRAYSIZE(textureNames))) {
-                        // Se puede manejar el cambio si es necesario
+     
                     }
                 }
                 ImGui::PopID();
