@@ -371,7 +371,7 @@ int main() {
     textures.push_back(loadTexture("textures/grass.jpeg"));   // índice 3
     textures.push_back(loadTexture("textures/stone.jpeg"));    // índice 4
 
-    // Posiciones de los objetos del móvil (como en tu código original)
+    // Posiciones de los objetos del móvil
     glm::vec3 posiciones[12] = {
         glm::vec3(2.0f, -2.0f, 0.0f),
         glm::vec3(-2.0f, -2.0f, 0.0f),
@@ -387,7 +387,7 @@ int main() {
         glm::vec3(0.0f,  0.5f, 0.0f)
     };
 
-    // Configuración de multitextura para cada objeto (igual que en tu código)
+    // Configuración de multitextura para cada objeto
     int cubeTextures[12] = { 0, 1, 2, 3, 4, 0, 1, 2, 3, 0, 1, 2 };
     bool useTextures[12] = { true, true, true, true, true, true, true, true, true, true, true, true };
     MultiTextureConfig multiTexConfigs[12];
@@ -469,7 +469,7 @@ int main() {
         glm::mat4 projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
 
         // --- PASADA 1: RENDERIZADO DEL MAPA DE SOMBRAS ---
-        // Configuramos la cámara de la luz (usamos proyección ortográfica)
+        // Configuramos la camara de la luz (usamos proyección ortográfica)
         float near_plane = 1.0f, far_plane = 20.0f;
         glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
         glm::mat4 lightView = glm::lookAt(-lightDir * 10.0f, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
@@ -486,7 +486,6 @@ int main() {
         float angle = currentFrame * 0.4f;
         for (int i = 0; i < 12; i++) {
             glm::mat4 model = glm::mat4(1.0f);
-            // Ajuste de escala segun el objeto
             if (i >= 5 && i < 9)
                 model = scale(glm::vec3(0.1f, 2.0f, 0.1f));
             else if (i == 9)
